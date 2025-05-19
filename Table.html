@@ -128,6 +128,10 @@
             color: white;
         }
 
+        .popup .delete-btn {
+            background-color: #ff9800;
+            color: white;
+        }
 
         .schedule-table {
             width: 100%;
@@ -143,21 +147,12 @@
             vertical-align: top;
         }
 
-        /* .schedule-table th {
-            background-color: #f8f8f8;
-            font-weight: bold;
-            text-align: center;
-        } */
-
         .schedule-table th:first-child {
-            /* Время столбец */
             width: 8%;
         }
 
         .schedule-table td:first-child {
-            /* Время ячейки */
             white-space: nowrap;
-            /* Prevent wrapping */
         }
 
         .schedule-table .day-header {
@@ -167,7 +162,6 @@
             border-bottom: 1px solid #ccc;
             text-align: center;
             border-radius: 5px 5px 0 0;
-            /* Rounded top corners */
             border: none;
         }
 
@@ -205,9 +199,7 @@
 
         .schedule-table a {
             color: #007bff;
-            /* Blue link color */
             text-decoration: none;
-            /* Remove underline */
         }
 
         .schedule-table a:hover {
@@ -216,7 +208,6 @@
 
         .schedule-table .event-highlight {
             border-left: 3px solid;
-            /* Added the coloured side border*/
         }
 
         .schedule-table .highlight-pink {
@@ -260,13 +251,7 @@
             <tbody>
                 <tr>
                     <td class="first"> 8.00 - 9.35</td>
-                    <td class="c">
-                        <div class="event-container event-highlight highlight-orange">
-                            <div class="event-title">Разработка распределённых приложений</div>
-                            <div class="event-details1">Сергунин Станислав Константинович</div>
-                            <div class="event-details2">224r-1</div>
-                        </div>
-                    </td>
+                    <td class="c"></td>
                     <td class="c"></td>
                     <td class="c"></td>
                     <td class="c"></td>
@@ -335,61 +320,47 @@
     <script>
         $(document).ready(function () {
             var currentCell = null;
-            
+            var currentEventId = null;
+
             // Функция для загрузки расписания с сервера
             function loadScheduleFromServer() {
                 $.ajax({
                     url: 'http://localhost:3000/table',
                     type: 'GET',
                     dataType: 'json',
-                    success: function(response) {
+                    success: function (response) {
                         try {
-                                 // Очищаем таблицу
-                            
-                            // Нормализуем данные (преобразуем в массив)
                             var scheduleData = normalizeData(response);
-                            
-                            // Заполняем таблицу
+                            console.log("Данные с сервера:", scheduleData);
                             fillTable(scheduleData);
                         } catch (error) {
                             console.error('Ошибка обработки расписания:', error);
                             alert('Ошибка загрузки расписания: ' + error.message);
                         }
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error('Ошибка AJAX:', status, error);
                         alert('Не удалось загрузить расписание. Проверьте консоль для деталей.');
                     }
                 });
             }
-            
+
             // Функция нормализации данных
             function normalizeData(data) {
-                // Если данные пришли как массив
                 if (Array.isArray(data)) {
                     return data;
                 }
-                // Если данные пришли как объект
                 else if (typeof data === 'object' && data !== null) {
-                    // Проверяем, есть ли поле table
                     if (data.table && Array.isArray(data.table)) {
                         return data.table;
                     }
-                    // Иначе преобразуем объект в массив
                     return [data];
                 }
                 return [];
             }
-            
-            // Функция очистки таблицы
-            function clearTable() {
-                // Очищаем все ячейки, кроме заголовков
-                $('tr:not(:first) td').empty();
-            }
-            
+
             // Функция заполнения таблицы
             function fillTable(scheduleData) {
-                // Сопоставление дней недели с номерами столбцов
                 var dayColumns = {
                     "Понедельник": 1,
                     "Вторник": 2,
@@ -398,8 +369,7 @@
                     "Пятница": 5,
                     "Суббота": 6
                 };
-                
-                // Сопоставление временных слотов с номерами строк
+
                 var timeRows = {
                     "8.00-9.35": 1,
                     "9.45-11.20": 2,
@@ -408,102 +378,184 @@
                     "15.15-16.50": 5,
                     "17.00-18.35": 6
                 };
-                
-                // Перебираем все элементы расписания
-                scheduleData.forEach(function(item) {
+
+                scheduleData.forEach(function (item) {
                     if (!item.day || !item.time) {
                         console.warn('Отсутствует день или время:', item);
                         return;
                     }
-                    
-                    // Получаем номер строки и столбца
+
                     var rowNum = timeRows[item.time];
                     var colNum = dayColumns[item.day];
-                    
+
                     if (!rowNum || !colNum) {
                         console.warn('Не найдена строка или столбец для:', item);
                         return;
                     }
-                    
-                    // Находим нужную ячейку
+
                     var row = $('tr').eq(rowNum);
                     if (row.length === 0) {
                         console.warn('Не найдена строка:', rowNum);
                         return;
                     }
-                    
+
                     var cell = row.find('td').eq(colNum);
                     if (cell.length === 0) {
                         console.warn('Не найдена ячейка:', colNum);
                         return;
                     }
-                    
-                    // Формируем содержимое ячейки
-                    var content = [];
 
-                    content.push('<div class="event-container event-highlight highlight-orange">');
+                    var content = [];
+                    content.push('<div class="event-container event-highlight highlight-orange" data-id="' + (item.id || '') + '">');
                     if (item.title) content.push(`<div class="event-title">${item.title}</div>`);
                     if (item.teacher) content.push(`<div class="event-details1">${item.teacher}</div>`);
                     if (item.location) content.push(`<div class="event-details2">${item.location}</div>`);
                     content.push('</div>');
-                    
-                    // Заполняем ячейку
+
                     cell.html(content.join(''));
                 });
             }
-            
+
             // Загружаем расписание при загрузке страницы
             loadScheduleFromServer();
-            
-            // Остальной код для редактирования ячеек
+
+            // Обработчик клика по ячейке
             $('td.c').on('click', function () {
                 currentCell = $(this);
+                var eventContainer = currentCell.find(".event-container");
 
-                // Получаем текущее содержимое элементов
-                var currentTitle = currentCell.find(".event-title").text().trim();
-                var currentDetails1 = currentCell.find(".event-details1").text().trim();
-                var currentDetails2 = currentCell.find(".event-details2").text().trim();
+                currentEventId = eventContainer.data('id') || null;
 
-                $('#editContent1').val(currentTitle);
-                $('#editContent2').val(currentDetails1);
-                $('#editContent3').val(currentDetails2);
+                $('#editContent1').val(currentCell.find(".event-title").text().trim());
+                $('#editContent2').val(currentCell.find(".event-details1").text().trim());
+                $('#editContent3').val(currentCell.find(".event-details2").text().trim());
 
-                // Если блочный элемент отсутствует, добавляем его
-                if (currentCell.find(".event-container").length === 0) {
+                if (eventContainer.length === 0) {
                     currentCell.append('<div class="event-container event-highlight highlight-orange"></div>');
                 }
 
                 $('.popup').fadeIn(800);
             });
 
-            $('.save-btn').on('click', function () {
-                // Очищаем содержимое контейнера перед добавлением новых данных
-                var container = currentCell.find(".event-container");
-                container.empty(); // очищаем содержимое контейнера
+            // Обработчик сохранения
+            $('.save-btn').on('click', function (event) {
+                event.preventDefault();
 
-                // Сохраняем новые значения в элементы внутри контейнера
                 var newContent1 = $('#editContent1').val().trim();
-                if (newContent1) {
-                    container.append('<div class="event-title">' + newContent1 + '</div>');
-                }
-
                 var newContent2 = $('#editContent2').val().trim();
-                if (newContent2) {
-                    container.append('<div class="event-details1">' + newContent2 + '</div>');
-                }
-
                 var newContent3 = $('#editContent3').val().trim();
-                if (newContent3) {
-                    container.append('<div class="event-details2">' + newContent3 + '</div>');
+
+                // Обновляем содержимое ячейки
+                var container = currentCell.find(".event-container");
+                container.empty();
+                if (newContent1) container.append('<div class="event-title">' + newContent1 + '</div>');
+                if (newContent2) container.append('<div class="event-details1">' + newContent2 + '</div>');
+                if (newContent3) container.append('<div class="event-details2">' + newContent3 + '</div>');
+
+                // Подготовка данных для отправки
+                var columnToDay = {
+                    1: "Понедельник",
+                    2: "Вторник",
+                    3: "Среда",
+                    4: "Четверг",
+                    5: "Пятница",
+                    6: "Суббота"
+                };
+
+                var rowToTime = {
+                    0: "8.00-9.35",
+                    1: "9.45-11.20",
+                    2: "11.30-13.05",
+                    3: "13.30-15.05",
+                    4: "15.15-16.50",
+                    5: "17.00-18.35"
+                };
+
+                var row = currentCell.parent().index() ; // -1 потому что первая строка - заголовок
+                var col = currentCell.index();
+
+                var eventData = {
+                    day: columnToDay[col] || "Неизвестный день",
+                    time: rowToTime[row] || "Неизвестное время",
+                    title: newContent1,
+                    teacher: newContent2,
+                    location: newContent3
+                };
+
+                // Если есть ID - это редактирование существующей записи
+                if (currentEventId) {
+                    eventData.id = currentEventId;
+                    updateEventOnServer(eventData);
+                }
+                // Если нет ID - это создание новой записи
+                else {
+                    createEventOnServer(eventData);
                 }
 
                 $('.popup').fadeOut();
             });
 
+            // Функция создания нового события
+            function createEventOnServer(eventData) {
+                $.ajax({
+                    url: "http://localhost:3000/table",
+                    type: "POST",
+                    data: eventData,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.id) {
+                            currentCell.find(".event-container").attr('data-id', response.id);
+                            currentEventId = response.id;
+                        }
+                        loadScheduleFromServer();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка создания:', error);
+                        alert('Не удалось создать событие.');
+                    }
+                });
+            }
+
+            // Функция обновления существующего события
+            function updateEventOnServer(eventData) {
+                $.ajax({
+                    url: "http://localhost:3000/table/" + eventData.id,
+                    type: "PUT", // Используем PUT для обновления
+                    data: eventData,
+                    dataType: "json",
+                    success: function (response) {
+                        loadScheduleFromServer();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка обновления:', error);
+                        alert('Не удалось обновить событие.');
+                    }
+                });
+            }
+
+            // Обработчик удаления
             $('.delete-btn').on('click', function () {
-                // Удаляем содержимое контейнера
-                currentCell.empty(); // очищаем контейнер
-                $('.popup').fadeOut();
+                if (currentEventId) {
+                    if (confirm('Вы уверены, что хотите удалить это событие?')) {
+                        $.ajax({
+                            url: "http://localhost:3000/table/" + currentEventId,
+                            type: "DELETE",
+                            success: function () {
+                                currentCell.empty();
+                                currentEventId = null;
+                                $('.popup').fadeOut();
+                                loadScheduleFromServer();
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Ошибка удаления:', error);
+                                alert('Не удалось удалить событие.');
+                            }
+                        });
+                    }
+                } else {
+                    currentCell.empty();
+                    $('.popup').fadeOut();
+                }
             });
 
             $('.close-btn').on('click', function () {
