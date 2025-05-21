@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        thead {
+            padding-bottom: 10px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            width: 150px;
+            height: 75px;
+            border-radius: 5px;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 8px;
+            width: 100%;
+            max-width: 1050px;
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        td.c {
+            padding: 8px;
+            text-align: center;
+            width: 250px;
+            height: 75px;
+            border: 1px solid rgb(220, 194, 228);
+            border-radius: 10px;
+        }
+
+        th {
+            background-color: #b0c4de;
+            color: white;
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            width: 150px;
+            height: 75px;
+        }
+
+        tr:nth-child(event) {
+            background-color: #e6f2ff;
+        }
+
+        td.c:hover {
+            background-color: #b1dae8;
+            border: 2px solid rgb(199, 190, 240);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .first {
+            background-color: #b0c4de;
+            border: 1px solid #ddd;
+            text-align: center;
+            color: white;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+        }
+
+        .popurIn {
+            max-width: 300px;
+        }
+
+        .popup input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .popup button {
+            padding: 10px 15px;
+            font-size: 16px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup .close-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .popup .save-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .popup .delete-btn {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .schedule-table th:first-child {
+            width: 8%;
+        }
+
+        .schedule-table td:first-child {
+            white-space: nowrap;
+        }
+
+        .schedule-table .day-header {
+            padding: 8px;
+            font-size: 17px;
+            color: #ffffff;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+            border: none;
+        }
+
+        .schedule-table .day-header {
+            background-color: #b0c4de;
+        }
+
+        .schedule-table .time-cell {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .schedule-table .event-container {
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .schedule-table .event-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .schedule-table .event-details1 {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .schedule-table .event-details2 {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .schedule-table a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .schedule-table a:hover {
+            text-decoration: underline;
+        }
+
+        .schedule-table .event-highlight {
+            border-left: 3px solid;
+        }
+
+        .schedule-table .highlight-pink {
+            border-color: #e91e63;
+        }
+
+        .schedule-table .highlight-orange {
+            border-color: #ff9800;
+        }
+
+        .week-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e6f2ff;
+            border-radius: 5px;
+        }
+
+        .week-selector select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .week-selector button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .copy-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6f2ff;
+            border-radius: 5px;
+        }
+
+        .copy-section h3 {
+            margin-top: 0;
+        }
+
+        .copy-section select {
+            padding: 8px;
+            margin: 0 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .copy-section button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+    <div style="display: flex; justify-content:center; flex-direction: column;">
+        <div class="week-nav">
+            <div class="week-selector">
+                <form id="weekForm" method="get">
+                    <select name="weekNumber" id="weekSelect">
+                        <option value="">Текущая неделя</option>
+                        <!-- Опции будут добавлены через JavaScript -->
+                    </select>
+                    <button type="submit">Показать</button>
+                </form>
+            </div>
+
+            <div id="currentWeekInfo" class="current-week">
+                <!-- Информация о текущей неделе будет добавлена через JavaScript -->
+            </div>
+        </div>
+
+        <table class="schedule-table">
+            <thead>
+                <tr class="a">
+                    <th class="first"></th>
+                    <th>
+                        <div class="day-header">Понедельник<br><span id="monDate"></span></div>
+                    </th>
+                    <th>
+                        <div class="day-header">Вторник<br><span id="tueDate"></span></div>
+                    </th>
+                    <th>
+                        <div class="day-header">Среда<br><span id="wedDate"></span></div>
+                    </th>
+                    <th>
+                        <div class="day-header">Четверг<br><span id="thuDate"></span></div>
+                    </th>
+                    <th>
+                        <div class="day-header">Пятница<br><span id="friDate"></span></div>
+                    </th>
+                    <th>
+                        <div class="day-header">Суббота<br><span id="satDate"></span></div>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="first"> 8.00 - 9.35</td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                </tr>
+                <tr>
+                    <td class="first"> 9.45-11.20</td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                </tr>
+                <tr>
+                    <td class="first"> 11.30-13.05</td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                </tr>
+                <tr>
+                    <td class="first"> 13.30-15.05</td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                </tr>
+                <tr>
+                    <td class="first"> 15.15-16.50</td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                </tr>
+                <tr>
+                    <td class="first">17.00-18.35</td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                    <td class="c"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="copy-section">
+            <h3>Копировать расписание</h3>
+            <form id="copyForm" method="post">
+                <input type="hidden" name="fromWeek" id="fromWeek">
+                <label>На неделю:
+                    <select name="toWeek" id="toWeek" required>
+                        <!-- Опции будут добавлены через JavaScript -->
+                    </select>
+                </label>
+                <button type="submit">Копировать</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="popup">
+        <input class="popurIn" type="text" id="editContent1" placeholder="Введите текст">
+        <input class="popurIn" type="text" id="editContent2" placeholder="Преподаватель">
+        <input class="popurIn" type="text" id="editContent3" placeholder="Аудитория">
+        <button class="save-btn">Сохранить</button>
+        <button class="delete-btn">Удалить</button>
+        <button class="close-btn">Закрыть</button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            var currentCell = null;
+            var currentEventId = null;
+            var currentWeek = null;
+            var weeks = [];
+
+            // Загрузка информации о неделях
+            function loadWeeks() {
+                $.ajax({
+                    url: '/api/weeks',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        weeks = response;
+                        updateWeekSelectors();
+                        if (weeks.length > 0) {
+                            loadCurrentWeek();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка загрузки недель:', error);
+                    }
+                });
+            }
+
+            // Обновление селекторов недель
+            function updateWeekSelectors() {
+                var weekSelect = $('#weekSelect');
+                var toWeekSelect = $('#toWeek');
+                
+                weekSelect.empty();
+                toWeekSelect.empty();
+                
+                weekSelect.append('<option value="">Текущая неделя</option>');
+                
+                weeks.forEach(function(week) {
+                    var optionText = 'Неделя ' + week.weekNumber + ' (' + formatDate(week.startDate) + '-' + formatDate(week.endDate) + ')';
+                    weekSelect.append('<option value="' + week.weekNumber + '">' + optionText + '</option>');
+                    
+                    if (week.weekNumber !== currentWeek?.weekNumber) {
+                        toWeekSelect.append('<option value="' + week.weekNumber + '">' + optionText + '</option>');
+                    }
+                });
+            }
+
+            // Форматирование даты
+            function formatDate(dateStr) {
+                if (!dateStr) return '';
+                var date = new Date(dateStr);
+                return (date.getDate() < 10 ? '0' : '') + date.getDate() + '.' + 
+                       ((date.getMonth() + 1) < 10 ? '0' : '') + (date.getMonth() + 1);
+            }
+
+            // Загрузка текущей недели
+            function loadCurrentWeek() {
+                $.ajax({
+                    url: '/api/current-week',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        currentWeek = response;
+                        updateCurrentWeekInfo();
+                        updateWeekDates();
+                        $('#fromWeek').val(currentWeek.weekNumber);
+                        loadScheduleFromServer();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка загрузки текущей недели:', error);
+                    }
+                });
+            }
+
+            // Обновление информации о текущей неделе
+            function updateCurrentWeekInfo() {
+                if (!currentWeek) return;
+                var infoText = '<strong>Текущая неделя:</strong> ' + 
+                               formatFullDate(currentWeek.startDate) + ' - ' + 
+                               formatFullDate(currentWeek.endDate);
+                $('#currentWeekInfo').html(infoText);
+            }
+
+            // Форматирование полной даты
+            function formatFullDate(dateStr) {
+                if (!dateStr) return '';
+                var date = new Date(dateStr);
+                return (date.getDate() < 10 ? '0' : '') + date.getDate() + '.' + 
+                       ((date.getMonth() + 1) < 10 ? '0' : '') + (date.getMonth() + 1) + '.' + 
+                       date.getFullYear();
+            }
+
+            // Обновление дат в заголовках дней недели
+            function updateWeekDates() {
+                if (!currentWeek || !currentWeek.startDate) return;
+                
+                var startDate = new Date(currentWeek.startDate);
+                $('#monDate').text(formatDate(startDate));
+                $('#tueDate').text(formatDate(addDays(startDate, 1)));
+                $('#wedDate').text(formatDate(addDays(startDate, 2)));
+                $('#thuDate').text(formatDate(addDays(startDate, 3)));
+                $('#friDate').text(formatDate(addDays(startDate, 4)));
+                $('#satDate').text(formatDate(addDays(startDate, 5)));
+            }
+
+            // Добавление дней к дате
+            function addDays(date, days) {
+                var result = new Date(date);
+                result.setDate(result.getDate() + days);
+                return result;
+            }
+
+            // Функция для загрузки расписания с сервера
+            function loadScheduleFromServer() {
+                if (!currentWeek) return;
+                
+                $.ajax({
+                    url: '/api/schedule?weekNumber=' + currentWeek.weekNumber,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        try {
+                            var scheduleData = normalizeData(response);
+                            console.log("Данные с сервера:", scheduleData);
+                            fillTable(scheduleData);
+                        } catch (error) {
+                            console.error('Ошибка обработки расписания:', error);
+                            alert('Ошибка загрузки расписания: ' + error.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка AJAX:', status, error);
+                        alert('Не удалось загрузить расписание. Проверьте консоль для деталей.');
+                    }
+                });
+            }
+
+            // Функция нормализации данных
+            function normalizeData(data) {
+                if (Array.isArray(data)) {
+                    return data;
+                }
+                else if (typeof data === 'object' && data !== null) {
+                    if (data.table && Array.isArray(data.table)) {
+                        return data.table;
+                    }
+                    return [data];
+                }
+                return [];
+            }
+
+            // Функция заполнения таблицы
+            function fillTable(scheduleData) {
+                // Очищаем все ячейки
+                $('td.c').empty();
+
+                var dayColumns = {
+                    "MONDAY": 1,
+                    "TUESDAY": 2,
+                    "WEDNESDAY": 3,
+                    "THURSDAY": 4,
+                    "FRIDAY": 5,
+                    "SATURDAY": 6
+                };
+
+                var timeRows = {
+                    "8.00-9.35": 1,
+                    "9.45-11.20": 2,
+                    "11.30-13.05": 3,
+                    "13.30-15.05": 4,
+                    "15.15-16.50": 5,
+                    "17.00-18.35": 6
+                };
+
+                scheduleData.forEach(function (item) {
+                    if (!item.dayOfWeek || !item.time) {
+                        console.warn('Отсутствует день или время:', item);
+                        return;
+                    }
+
+                    var rowNum = timeRows[item.time];
+                    var colNum = dayColumns[item.dayOfWeek];
+
+                    if (!rowNum || !colNum) {
+                        console.warn('Не найдена строка или столбец для:', item);
+                        return;
+                    }
+
+                    var row = $('tr').eq(rowNum);
+                    if (row.length === 0) {
+                        console.warn('Не найдена строка:', rowNum);
+                        return;
+                    }
+
+                    var cell = row.find('td').eq(colNum);
+                    if (cell.length === 0) {
+                        console.warn('Не найдена ячейка:', colNum);
+                        return;
+                    }
+
+                    var content = [];
+                    content.push('<div class="event-container event-highlight highlight-orange" data-id="' + (item.id || '') + '">');
+                    if (item.subjectName) content.push(`<div class="event-title">${item.subjectName}</div>`);
+                    if (item.teacher) content.push(`<div class="event-details1">${item.teacher}</div>`);
+                    if (item.location) content.push(`<div class="event-details2">${item.location}</div>`);
+                    content.push('</div>');
+
+                    cell.html(content.join(''));
+                });
+            }
+
+            // Обработчик отправки формы выбора недели
+            $('#weekForm').on('submit', function(e) {
+                e.preventDefault();
+                var weekNumber = $('#weekSelect').val();
+                if (weekNumber === '') {
+                    loadCurrentWeek();
+                } else {
+                    // Находим выбранную неделю
+                    var selectedWeek = weeks.find(w => w.weekNumber == weekNumber);
+                    if (selectedWeek) {
+                        currentWeek = selectedWeek;
+                        updateCurrentWeekInfo();
+                        updateWeekDates();
+                        $('#fromWeek').val(currentWeek.weekNumber);
+                        loadScheduleFromServer();
+                    }
+                }
+            });
+
+            // Обработчик отправки формы копирования
+            $('#copyForm').on('submit', function(e) {
+                e.preventDefault();
+                var fromWeek = $('#fromWeek').val();
+                var toWeek = $('#toWeek').val();
+                
+                if (!fromWeek || !toWeek) {
+                    alert('Пожалуйста, выберите недели для копирования');
+                    return;
+                }
+                
+                $.ajax({
+                    url: '/api/schedule/copy',
+                    type: 'POST',
+                    data: {
+                        fromWeek: fromWeek,
+                        toWeek: toWeek
+                    },
+                    success: function() {
+                        alert('Расписание успешно скопировано');
+                        loadScheduleFromServer();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Ошибка копирования:', error);
+                        alert('Не удалось скопировать расписание');
+                    }
+                });
+            });
+
+            // Обработчик клика по ячейке
+            $('td.c').on('click', function () {
+                currentCell = $(this);
+                var eventContainer = currentCell.find(".event-container");
+
+                currentEventId = eventContainer.data('id') || null;
+
+                $('#editContent1').val(currentCell.find(".event-title").text().trim());
+                $('#editContent2').val(currentCell.find(".event-details1").text().trim());
+                $('#editContent3').val(currentCell.find(".event-details2").text().trim());
+
+                if (eventContainer.length === 0) {
+                    currentCell.append('<div class="event-container event-highlight highlight-orange"></div>');
+                }
+
+                $('.popup').fadeIn(800);
+            });
+
+            // Обработчик сохранения
+            $('.save-btn').on('click', function (event) {
+                event.preventDefault();
+
+                var newContent1 = $('#editContent1').val().trim();
+                var newContent2 = $('#editContent2').val().trim();
+                var newContent3 = $('#editContent3').val().trim();
+
+                // Обновляем содержимое ячейки
+                var container = currentCell.find(".event-container");
+                container.empty();
+                if (newContent1) container.append('<div class="event-title">' + newContent1 + '</div>');
+                if (newContent2) container.append('<div class="event-details1">' + newContent2 + '</div>');
+                if (newContent3) container.append('<div class="event-details2">' + newContent3 + '</div>');
+
+                // Подготовка данных для отправки
+                var columnToDay = {
+                    1: "MONDAY",
+                    2: "TUESDAY",
+                    3: "WEDNESDAY",
+                    4: "THURSDAY",
+                    5: "FRIDAY",
+                    6: "SATURDAY"
+                };
+
+                var rowToTime = {
+                    0: "8.00-9.35",
+                    1: "9.45-11.20",
+                    2: "11.30-13.05",
+                    3: "13.30-15.05",
+                    4: "15.15-16.50",
+                    5: "17.00-18.35"
+                };
+
+                var row = currentCell.parent().index() - 1; // -1 потому что первая строка - заголовок
+                var col = currentCell.index();
+
+                var eventData = {
+                    dayOfWeek: columnToDay[col] || "MONDAY",
+                    time: rowToTime[row] || "8.00-9.35",
+                    subjectName: newContent1,
+                    teacher: newContent2,
+                    location: newContent3,
+                    weekNumber: currentWeek.weekNumber
+                };
+
+                // Если есть ID - это редактирование существующей записи
+                if (currentEventId) {
+                    eventData.id = currentEventId;
+                    updateEventOnServer(eventData);
+                }
+                // Если нет ID - это создание новой записи
+                else {
+                    createEventOnServer(eventData);
+                }
+
+                $('.popup').fadeOut();
+            });
+
+            // Функция создания нового события
+            function createEventOnServer(eventData) {
+                $.ajax({
+                    url: "/api/schedule",
+                    type: "POST",
+                    data: eventData,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.id) {
+                            currentCell.find(".event-container").attr('data-id', response.id);
+                            currentEventId = response.id;
+                        }
+                        loadScheduleFromServer();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка создания:', error);
+                        alert('Не удалось создать событие.');
+                    }
+                });
+            }
+
+            // Функция обновления существующего события
+            function updateEventOnServer(eventData) {
+                $.ajax({
+                    url: "/api/schedule/" + eventData.id,
+                    type: "PUT",
+                    data: eventData,
+                    dataType: "json",
+                    success: function (response) {
+                        loadScheduleFromServer();
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка обновления:', error);
+                        alert('Не удалось обновить событие.');
+                    }
+                });
+            }
+
+            // Обработчик удаления
+            $('.delete-btn').on('click', function () {
+                if (currentEventId) {
+                    if (confirm('Вы уверены, что хотите удалить это событие?')) {
+                        $.ajax({
+                            url: "/api/schedule/" + currentEventId,
+                            type: "DELETE",
+                            data: {
+                                weekNumber: currentWeek.weekNumber
+                            },
+                            success: function () {
+                                currentCell.empty();
+                                currentEventId = null;
+                                $('.popup').fadeOut();
+                                loadScheduleFromServer();
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Ошибка удаления:', error);
+                                alert('Не удалось удалить событие.');
+                            }
+                        });
+                    }
+                } else {
+                    currentCell.empty();
+                    $('.popup').fadeOut();
+                }
+            });
+
+            $('.close-btn').on('click', function () {
+                $('.popup').fadeOut();
+            });
+
+            // Инициализация
+            loadWeeks();
+        });
+    </script>
+
+</body>
+</html>
