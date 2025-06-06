@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Расписание предметов</title>
+    <title>Расписание</title>
     <style>
         body {
             font-family: sans-serif;
@@ -20,7 +21,8 @@
             padding-bottom: 10px;
         }
 
-        th, td {
+        th,
+        td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: center;
@@ -57,7 +59,7 @@
             height: 75px;
         }
 
-        tr:nth-child(even) {
+        tr:nth-child(event) {
             background-color: #e6f2ff;
         }
 
@@ -136,6 +138,22 @@
             margin-bottom: 20px;
         }
 
+        .schedule-table th,
+        .schedule-table td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .schedule-table th:first-child {
+            width: 8%;
+        }
+
+        .schedule-table td:first-child {
+            white-space: nowrap;
+        }
+
         .schedule-table .day-header {
             padding: 8px;
             font-size: 17px;
@@ -148,6 +166,11 @@
 
         .schedule-table .day-header {
             background-color: #b0c4de;
+        }
+
+        .schedule-table .time-cell {
+            font-size: 12px;
+            color: #777;
         }
 
         .schedule-table .event-container {
@@ -163,68 +186,129 @@
             margin-bottom: 5px;
         }
 
-        .schedule-table .event-details {
+        .schedule-table .event-details1 {
             font-size: 12px;
             color: #555;
+        }
+
+        .schedule-table .event-details2 {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .schedule-table a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .schedule-table a:hover {
+            text-decoration: underline;
         }
 
         .schedule-table .event-highlight {
             border-left: 3px solid;
         }
 
+        .schedule-table .highlight-pink {
+            border-color: #e91e63;
+        }
+
         .schedule-table .highlight-orange {
             border-color: #ff9800;
         }
-
-        .delete-form {
-            display: inline;
+        
+        /* Новые стили для блока недели */
+        .week-header {
+            text-align: center;
+            margin-bottom: 20px;
+            background-color: #e1ecf4; /* Новый оттенок фона */
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 1050px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        .delete-btn-small {
-            background-color: #f44336;
+        
+        .week-nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .week-nav button {
+            padding: 8px 15px;
+            background-color: #9cb8d1;
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            font-size: 12px;
+            border-radius: 20px;
             cursor: pointer;
-            margin-left: 5px;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .week-nav button:hover {
+            background-color: #8aa7c0;
+        }
+        
+        .week-title {
+            flex-grow: 1;
+            text-align: center;
+            font-style: italic;
+            font-size: 20px;
+            color: #333;
+            font-weight: normal;
+        }
+        
+        .day-name {
+            font-weight: bold;
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
+
     <div style="display: flex; justify-content:center; flex-direction: column;">
-        <h1>Расписание предметов</h1>
+       
+        <div class="week-header">
+            <div class="week-nav">
+                <button id="prev-week">← Предыдущая</button>
+            </div>
+            <div class="week-title" id="week-title">37 НЕДЕЛЯ</div>
+            <div class="week-nav">
+                <button id="next-week">Следующая →</button>
+            </div>
+        </div>
+        
         <table class="schedule-table">
             <thead>
                 <tr class="a">
                     <th class="first"></th>
                     <th>
-                        <div class="day-header">Понедельник</div>
+                        <br><div class="day-header"><span class="day-name">Понедельник</span><br></div>
                     </th>
                     <th>
-                        <div class="day-header">Вторник</div>
+                        <br><div class="day-header"><span class="day-name">Вторник</span><br></div>
                     </th>
                     <th>
-                        <div class="day-header">Среда</div>
+                        <br><div class="day-header"><span class="day-name">Среда</span><br></div>
                     </th>
                     <th>
-                        <div class="day-header">Четверг</div>
+                        <br><div class="day-header"><span class="day-name">Четверг</span><br></div>
                     </th>
                     <th>
-                        <div class="day-header">Пятница</div>
+                        <br><div class="day-header"><span class="day-name">Пятница</span><br></div>
                     </th>
                     <th>
-                        <div class="day-header">Суббота</div>
+                        <br><div class="day-header"><span class="day-name">Суббота</span><br></div>
                     </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="first">8.00 - 9.35</td>
+                    <td class="first"> 8.00 - 9.35</td>
                     <td class="c"></td>
                     <td class="c"></td>
                     <td class="c"></td>
@@ -233,7 +317,7 @@
                     <td class="c"></td>
                 </tr>
                 <tr>
-                    <td class="first">9.45-11.20</td>
+                    <td class="first"> 9.45-11.20</td>
                     <td class="c"></td>
                     <td class="c"></td>
                     <td class="c"></td>
@@ -242,7 +326,7 @@
                     <td class="c"></td>
                 </tr>
                 <tr>
-                    <td class="first">11.30-13.05</td>
+                    <td class="first"> 11.30-13.05</td>
                     <td class="c"></td>
                     <td class="c"></td>
                     <td class="c"></td>
@@ -251,7 +335,7 @@
                     <td class="c"></td>
                 </tr>
                 <tr>
-                    <td class="first">13.30-15.05</td>
+                    <td class="first"> 13.30-15.05</td>
                     <td class="c"></td>
                     <td class="c"></td>
                     <td class="c"></td>
@@ -260,7 +344,7 @@
                     <td class="c"></td>
                 </tr>
                 <tr>
-                    <td class="first">15.15-16.50</td>
+                    <td class="first"> 15.15-16.50</td>
                     <td class="c"></td>
                     <td class="c"></td>
                     <td class="c"></td>
@@ -281,8 +365,11 @@
         </table>
     </div>
 
+
     <div class="popup">
-        <input class="popurIn" type="text" id="subjectName" placeholder="Название предмета" required>
+        <input class="popurIn" type="text" id="editContent1" placeholder="Введите текст">
+        <input class="popurIn" type="text" id="editContent2" placeholder="Преподаватель">
+        <input class="popurIn" type="text" id="editContent3" placeholder="Аудитория">
         <button class="save-btn">Сохранить</button>
         <button class="delete-btn">Удалить</button>
         <button class="close-btn">Закрыть</button>
@@ -292,206 +379,299 @@
         $(document).ready(function () {
             var currentCell = null;
             var currentEventId = null;
-            var currentDay = null;
-            var currentTime = null;
+            var currentWeek = 37; 
+            var weekDates = [
+                "19.05.25",
+                "20.05.25",
+                "21.05.25",
+                "22.05.25",
+                "23.05.25",
+                "24.05.25"
+            ];
 
-            // Загрузка расписания с сервера
-            function loadSchedule() {
+           
+            function updateWeekTitle() {
+                $('#week-title').text(currentWeek + ' НЕДЕЛЯ');
+            }
+
+            
+            function updateDatesForWeek() {
+                $('.day-date').each(function(index) {
+                    $(this).text(weekDates[index]);
+                });
+            }
+
+            
+            $('#prev-week').on('click', function(e) {
+                e.preventDefault();
+                currentWeek--;
+                updateWeekTitle();
+                loadScheduleFromServer();
+            });
+            
+            $('#next-week').on('click', function(e) {
+                e.preventDefault();
+                currentWeek++;
+                updateWeekTitle();
+                loadScheduleFromServer();
+            });
+
+           
+            updateWeekTitle();
+            updateDatesForWeek();
+
+           
+            function loadScheduleFromServer() {
                 $.ajax({
-                    url: '/schedule',
+                    url: 'http://localhost:3000/table',
                     type: 'GET',
                     dataType: 'json',
-                    success: function(data) {
-                        fillTable(data);
+                    data: { week: currentWeek }, 
+                    success: function (response) {
+                        try {
+                            var scheduleData = normalizeData(response);
+                            console.log("Данные с сервера:", scheduleData);
+                            fillTable(scheduleData);
+                        } catch (error) {
+                            console.error('Ошибка обработки расписания:', error);
+                            alert('Ошибка загрузки расписания: ' + error.message);
+                        }
                     },
-                    error: function(xhr, status, error) {
-                        console.error('Ошибка загрузки расписания:', error);
+                    error: function (xhr, status, error) {
+                        console.error('Ошибка AJAX:', status, error);
+                        alert('Не удалось загрузить расписание. Проверьте консоль для деталей.');
                     }
                 });
             }
+            
 
-            // Заполнение таблицы данными
+           
+            function normalizeData(data) {
+                if (Array.isArray(data)) {
+                    return data;
+                }
+                else if (typeof data === 'object' && data !== null) {
+                    if (data.table && Array.isArray(data.table)) {
+                        return data.table;
+                    }
+                    return [data];
+                }
+                return [];
+            }
+
+           
             function fillTable(scheduleData) {
-                // Очищаем таблицу
+                var dayColumns = {
+                    "Понедельник": 1,
+                    "Вторник": 2,
+                    "Среда": 3,
+                    "Четверг": 4,
+                    "Пятница": 5,
+                    "Суббота": 6
+                };
+
+                var timeRows = {
+                    "8.00-9.35": 1,
+                    "9.45-11.20": 2,
+                    "11.30-13.05": 3,
+                    "13.30-15.05": 4,
+                    "15.15-16.50": 5,
+                    "17.00-18.35": 6
+                };
+
+              
                 $('td.c').empty();
 
-                // Сопоставление дней недели с номерами столбцов
-                const dayColumns = {
-                    "MONDAY": 1,
-                    "TUESDAY": 2,
-                    "WEDNESDAY": 3,
-                    "THURSDAY": 4,
-                    "FRIDAY": 5,
-                    "SATURDAY": 6
-                };
-
-                // Сопоставление временных слотов с номерами строк
-                const timeRows = {
-                    "08:00-09:35": 1,
-                    "09:45-11:20": 2,
-                    "11:30-13:05": 3,
-                    "13:30-15:05": 4,
-                    "15:15-16:50": 5,
-                    "17:00-18:35": 6
-                };
-
-                // Заполняем таблицу данными
-                scheduleData.forEach(function(item) {
-                    const col = dayColumns[item.dayOfWeek];
-                    const row = timeRows[item.timeSlot];
-                    
-                    if (col && row) {
-                        const cell = $('tr').eq(row).find('td').eq(col);
-                        const eventHtml = `
-                            <div class="event-container event-highlight highlight-orange" data-id="${item.id}">
-                                <div class="event-title">${item.subjectName}</div>
-                                <form class="delete-form" onsubmit="deleteEvent(event, ${item.id})">
-                                    <button type="submit" class="delete-btn-small">×</button>
-                                </form>
-                            </div>
-                        `;
-                        cell.html(eventHtml);
+                scheduleData.forEach(function (item) {
+                    if (!item.day || !item.time) {
+                        console.warn('Отсутствует день или время:', item);
+                        return;
                     }
+
+                    var rowNum = timeRows[item.time];
+                    var colNum = dayColumns[item.day];
+
+                    if (!rowNum || !colNum) {
+                        console.warn('Не найдена строка или столбец для:', item);
+                        return;
+                    }
+
+                    var row = $('tr').eq(rowNum);
+                    if (row.length === 0) {
+                        console.warn('Не найдена строка:', rowNum);
+                        return;
+                    }
+
+                    var cell = row.find('td').eq(colNum);
+                    if (cell.length === 0) {
+                        console.warn('Не найдена ячейка:', colNum);
+                        return;
+                    }
+
+                    var content = [];
+                    content.push('<div class="event-container event-highlight highlight-orange" data-id="' + (item.id || '') + '">');
+                    if (item.title) content.push(`<div class="event-title">${item.title}</div>`);
+                    if (item.teacher) content.push(`<div class="event-details1">${item.teacher}</div>`);
+                    if (item.location) content.push(`<div class="event-details2">${item.location}</div>`);
+                    content.push('</div>');
+
+                    cell.html(content.join(''));
                 });
             }
 
-            // Обработчик клика по ячейке
-            $('td.c').on('click', function() {
+         
+            loadScheduleFromServer();
+
+           
+            $('td.c').on('click', function (e) {
+                e.preventDefault();
                 currentCell = $(this);
-                
-                // Определяем день и время
-                const col = currentCell.index();
-                const row = currentCell.parent().index();
-                
-                const dayMapping = {
-                    1: "MONDAY",
-                    2: "TUESDAY",
-                    3: "WEDNESDAY",
-                    4: "THURSDAY",
-                    5: "FRIDAY",
-                    6: "SATURDAY"
-                };
-                
-                const timeMapping = {
-                    1: "08:00-09:35",
-                    2: "09:45-11:20",
-                    3: "11:30-13:05",
-                    4: "13:30-15:05",
-                    5: "15:15-16:50",
-                    6: "17:00-18:35"
-                };
-                
-                currentDay = dayMapping[col];
-                currentTime = timeMapping[row];
-                
-                // Получаем текущий предмет (если есть)
-                const currentSubject = currentCell.find(".event-title").text().trim();
-                $('#subjectName').val(currentSubject);
-                
-                // Получаем ID события (если есть)
-                currentEventId = currentCell.find(".event-container").data('id') || null;
-                
+                var eventContainer = currentCell.find(".event-container");
+
+                currentEventId = eventContainer.data('id') || null;
+
+                $('#editContent1').val(currentCell.find(".event-title").text().trim());
+                $('#editContent2').val(currentCell.find(".event-details1").text().trim());
+                $('#editContent3').val(currentCell.find(".event-details2").text().trim());
+
+                if (eventContainer.length === 0) {
+                    currentCell.append('<div class="event-container event-highlight highlight-orange"></div>');
+                }
+
                 $('.popup').fadeIn(800);
             });
 
-            // Обработчик сохранения
-            $('.save-btn').on('click', function() {
-                const subjectName = $('#subjectName').val().trim();
-                
-                if (!subjectName) {
-                    alert('Пожалуйста, введите название предмета');
-                    return;
-                }
-                
-                const eventData = {
-                    dayOfWeek: currentDay,
-                    timeSlot: currentTime,
-                    subjectName: subjectName
+          
+            $('.save-btn').on('click', function (e) {
+                e.preventDefault();
+
+                var newContent1 = $('#editContent1').val().trim();
+                var newContent2 = $('#editContent2').val().trim();
+                var newContent3 = $('#editContent3').val().trim();
+
+              
+                var container = currentCell.find(".event-container");
+                container.empty();
+                if (newContent1) container.append('<div class="event-title">' + newContent1 + '</div>');
+                if (newContent2) container.append('<div class="event-details1">' + newContent2 + '</div>');
+                if (newContent3) container.append('<div class="event-details2">' + newContent3 + '</div>');
+
+             
+                var columnToDay = {
+                    1: "Понедельник",
+                    2: "Вторник",
+                    3: "Среда",
+                    4: "Четверг",
+                    5: "Пятница",
+                    6: "Суббота"
                 };
-                
+
+                var rowToTime = {
+                    0: "8.00-9.35",
+                    1: "9.45-11.20",
+                    2: "11.30-13.05",
+                    3: "13.30-15.05",
+                    4: "15.15-16.50",
+                    5: "17.00-18.35"
+                };
+
+                var row = currentCell.parent().index() ; 
+                var col = currentCell.index();
+
+                var eventData = {
+                    day: columnToDay[col] || "Неизвестный день",
+                    time: rowToTime[row] || "Неизвестное время",
+                    title: newContent1,
+                    teacher: newContent2,
+                    location: newContent3,
+                    week: currentWeek 
+                };
+
+               
                 if (currentEventId) {
-                    // Обновление существующего события
-                    updateEvent(currentEventId, eventData);
-                } else {
-                    // Создание нового события
-                    createEvent(eventData);
+                    eventData.id = currentEventId;
+                    updateEventOnServer(eventData);
                 }
-                
+               
+                else {
+                    createEventOnServer(eventData);
+                }
+
                 $('.popup').fadeOut();
             });
 
-            // Создание нового события
-            function createEvent(eventData) {
+           
+            function createEventOnServer(eventData) {
                 $.ajax({
-                    url: '/schedule/add',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(eventData),
-                    success: function() {
-                        loadSchedule();
+                    url: "http://localhost:3000/table",
+                    type: "POST",
+                    data: eventData,
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.id) {
+                            currentCell.find(".event-container").attr('data-id', response.id);
+                            currentEventId = response.id;
+                        }
+                        loadScheduleFromServer();
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error('Ошибка создания:', error);
-                        alert('Не удалось добавить предмет');
+                        alert('Не удалось создать событие.');
                     }
                 });
             }
 
-            // Обновление события
-            function updateEvent(id, eventData) {
+
+            function updateEventOnServer(eventData) {
                 $.ajax({
-                    url: '/schedule/update/' + id,
-                    type: 'PUT',
-                    contentType: 'application/json',
-                    data: JSON.stringify(eventData),
-                    success: function() {
-                        loadSchedule();
+                    url: "http://localhost:3000/table/" + eventData.id,
+                    type: "PUT", 
+                    data: eventData,
+                    dataType: "json",
+                    success: function (response) {
+                        loadScheduleFromServer();
                     },
-                    error: function(xhr, status, error) {
+                    error: function (xhr, status, error) {
                         console.error('Ошибка обновления:', error);
-                        alert('Не удалось обновить предмет');
+                        alert('Не удалось обновить событие.');
                     }
                 });
             }
 
-            // Удаление события (из попапа)
-            $('.delete-btn').on('click', function() {
+           
+            $('.delete-btn').on('click', function (e) {
+                e.preventDefault();
                 if (currentEventId) {
-                    deleteEventById(currentEventId);
+                    if (confirm('Вы уверены, что хотите удалить это событие?')) {
+                        $.ajax({
+                            
+                            url: "http://localhost:3000/table/" + currentEventId,
+                            type: "DELETE",
+                            success: function () {
+                                currentCell.empty();
+                                currentEventId = null;
+                                $('.popup').fadeOut();
+                                loadScheduleFromServer();
+                            },
+                            error: function (xhr, status, error) {
+                                console.error('Ошибка удаления:', error);
+                                alert('Не удалось удалить событие.');
+                            }
+                        });
+                    }
+                } else {
+                    currentCell.empty();
                     $('.popup').fadeOut();
                 }
             });
 
-            // Удаление события (из таблицы)
-            window.deleteEvent = function(event, id) {
-                event.preventDefault();
-                deleteEventById(id);
-            };
-
-            function deleteEventById(id) {
-                if (confirm('Вы уверены, что хотите удалить этот предмет?')) {
-                    $.ajax({
-                        url: '/schedule/delete/' + id,
-                        type: 'DELETE',
-                        success: function() {
-                            loadSchedule();
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Ошибка удаления:', error);
-                            alert('Не удалось удалить предмет');
-                        }
-                    });
-                }
-            }
-
-            // Закрытие попапа
-            $('.close-btn').on('click', function() {
+            $('.close-btn').on('click', function (e) {
+                //e.preventDefault();
                 $('.popup').fadeOut();
             });
-
-            // Первоначальная загрузка расписания
-            loadSchedule();
         });
     </script>
+
 </body>
+
 </html>
